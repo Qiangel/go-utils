@@ -33,6 +33,7 @@ type log struct {
 var defaultOptions = options{
 	level:          DebugLevel,
 	enableSaveFile: false,
+	enableSaveDB:   false,
 	caller:         true,
 	fileName:       FileName + defaultFileName(),
 	maxSize:        MaxSize,
@@ -45,6 +46,7 @@ type options struct {
 	version        string //版本
 	level          string //日志级别
 	enableSaveFile bool   //是否开启文件存储
+	enableSaveDB   bool   //是否开启存储到数据库
 	caller         bool   //显示行号等
 	fileName       string //存储路径和文件
 	maxSize        int    //每个文件的最大尺寸 M
@@ -71,6 +73,13 @@ func WithVersion(version string) Option {
 func WithEnableSaveFile(enable bool) Option {
 	return func(o *options) {
 		o.enableSaveFile = enable
+	}
+}
+
+//WithEnableSaveDB 是否开启存储到数据库
+func WithEnableSaveDB(enable bool) Option {
+	return func(o *options) {
+		o.enableSaveDB = enable
 	}
 }
 
@@ -155,6 +164,9 @@ func build(opts *options) {
 	wss = append(wss, zapcore.AddSync(os.Stdout))
 	if opts.enableSaveFile {
 		wss = append(wss, ws) //日志切割文件
+	}
+	if opts.enableSaveDB {
+		wss = append(wss, zapcore.AddSync(hk)) //日志存入数据库
 	}
 	writeSs := zapcore.NewMultiWriteSyncer(wss...)
 	core := zapcore.NewCore(

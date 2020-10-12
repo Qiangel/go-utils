@@ -10,6 +10,7 @@ import (
 
 const (
 	TraceIDKey = "trace_id"
+	UserIDKey  = "trace_id"
 )
 
 func startSpan(ctx context.Context) *zap.SugaredLogger {
@@ -19,6 +20,9 @@ func startSpan(ctx context.Context) *zap.SugaredLogger {
 	sugar := logger.opts.sugaredLogger
 	if id, ok := FromTraceIDContext(ctx); ok {
 		sugar = sugar.With(TraceIDKey, id)
+	}
+	if id, ok := FromUserIDContext(ctx); ok {
+		sugar = sugar.With(UserIDKey, id)
 	}
 	return sugar
 }
