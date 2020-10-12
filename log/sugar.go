@@ -10,7 +10,7 @@ import (
 
 const (
 	TraceIDKey = "trace_id"
-	UserIDKey  = "trace_id"
+	UserIDKey  = "user_id"
 )
 
 func startSpan(ctx context.Context) *zap.SugaredLogger {
